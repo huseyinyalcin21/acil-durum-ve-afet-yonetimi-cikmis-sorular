@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acil Durum ve Afet Yönetimi Çıkmış Sorular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#22303D;
+    --navy:#16232F;
+    --navy-deep:#0F1A23;
+    --paper:#F2EBD8;
+    --paper-dim:#E9E0C8;
+    --rule-red:#B33A3A;
+    --rule-blue:#4A6C8C;
+    --green:#3F6B4F;
+    --green-dim:#335a41;
+    --mustard:#D1A33B;
+    --paper-shadow: 0 18px 40px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #1c2e3d 0%, transparent 60%),
+      var(--navy);
+    color:var(--paper);
+    font-family:'IBM Plex Mono', monospace;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  ::selection{background:var(--mustard); color:var(--navy-deep);}
+
+  header{
+    padding:26px clamp(16px,4vw,48px) 16px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    border-bottom:1px solid rgba(242,235,216,0.12);
+    flex-wrap:wrap;
+  }
+  header h1{
+    font-family:'Lora', serif;
+    font-weight:600;
+    font-size:clamp(22px,3vw,28px);
+    margin:0;
+  }
+  header h1 span{color:var(--mustard);}
+  header p{margin:4px 0 0; font-size:12px; color:rgba(242,235,216,0.5);}
+
+  .layout{
+    flex:1;
+    display:grid;
+    grid-template-columns:230px 1fr;
+    min-height:0;
+  }
+  @media (max-width:760px){ .layout{grid-template-columns:1fr;} }
+
+  .drawer{
+    border-right:1px solid rgba(242,235,216,0.12);
+    padding:20px 14px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .drawer-label{font-size:11px; color:rgba(242,235,216,0.45); padding:0 8px 8px;}
+  .deck-btn{
+    text-align:left; background:none; border:1px solid transparent;
+    color:var(--paper); padding:10px; border-radius:3px;
+    font-family:inherit; font-size:13.5px; cursor:pointer;
+    display:flex; justify-content:space-between; gap:8px;
+  }
+  .deck-btn:hover{background:rgba(242,235,216,0.06);}
+  .deck-btn.active{background:rgba(209,163,59,0.12); border-color:rgba(209,163,59,0.4); color:var(--mustard);}
+  .deck-btn small{opacity:0.6; font-weight:400;}
+  .new-deck{
+    margin-top:12px; padding:10px; border:1px dashed rgba(242,235,216,0.3);
+    border-radius:3px; background:none; color:rgba(242,235,216,0.7);
+    font-family:inherit; font-size:13px; cursor:pointer;
+  }
+  .new-deck:hover{border-color:var(--mustard); color:var(--mustard);}
+  .edit-link{
+    margin-top:auto; padding-top:14px; border-top:1px solid rgba(242,235,216,0.1);
+    font-size:12px; color:rgba(242,235,216,0.45); background:none; border-left:none; border-right:none; border-bottom:none;
+    text-align:left; cursor:pointer; font-family:inherit;
+  }
+  .edit-link:hover{color:var(--mustard);}
+
+  main{
+    padding:clamp(20px,4vw,44px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+  }
+  .deck-heading{
+    width:100%; max-width:640px;
+    display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;
+  }
+  .deck-heading h2{font-family:'Lora', serif; font-size:21px; font-weight:600; margin:0;}
+  .deck-heading .count{font-size:12px; color:rgba(242,235,216,0.5);}
+
+  .progress-wrap{width:100%; max-width:640px;}
+  .progress-track{
+    width:100%; height:6px; border-radius:3px;
+    background:rgba(242,235,216,0.12); overflow:hidden;
+  }
+  .progress-fill{height:100%; background:var(--mustard); transition:width 0.35s ease;}
+  .progress-label{
+    display:flex; justify-content:space-between; font-size:11.5px;
+    color:rgba(242,235,216,0.55); margin-top:6px;
+  }
+
+  .quiz-box{
+    width:100%; max-width:640px; background:var(--paper); color:var(--ink);
+    border-radius:6px; box-shadow:var(--paper-shadow); padding:36px 40px; position:relative;
+  }
+  .quiz-box::before{
+    content:""; position:absolute; top:38px; left:0; right:0; height:2px;
+    background:var(--rule-red); opacity:0.5;
+  }
+  .quiz-eyebrow{font-size:11px; color:rgba(34,48,61,0.45);}
+  .quiz-q{
+    font-family:'Lora', serif; font-size:clamp(16px,2.1vw,20px); font-weight:600;
+    margin:18px 0 22px; line-height:1.5;
+  }
+  .quiz-options{display:grid; gap:10px;}
+  .quiz-option{
+    text-align:left; font-family:inherit; font-size:14px; padding:13px 16px;
+    border-radius:4px; border:1px solid rgba(34,48,61,0.2);
+    background:rgba(34,48,61,0.03); cursor:pointer; color:var(--ink);
+    display:flex; gap:10px;
+  }
+  .quiz-option .opt-letter{font-weight:600; color:rgba(34,48,61,0.5); min-width:16px;}
+  .quiz-option:hover{border-color:var(--rule-blue);}
+  .quiz-option.correct{background:rgba(63,107,79,0.15); border-color:var(--green);}
+  .quiz-option.wrong{background:rgba(179,58,58,0.13); border-color:var(--rule-red);}
+  .quiz-option:disabled{cursor:default;}
+  .quiz-footer{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:22px; font-size:12.5px; color:rgba(34,48,61,0.55);
+  }
+  .quiz-next{
+    font-family:inherit; font-size:12.5px; padding:9px 18px; border-radius:4px;
+    border:none; background:var(--green); color:#fff; cursor:pointer;
+  }
+  .quiz-next:disabled{opacity:0.35; cursor:default;}
+
+  .quiz-result{text-align:center; padding:16px 0;}
+  .quiz-result .badge{font-size:12px; color:rgba(34,48,61,0.55);}
+  .quiz-result .score{
+    font-family:'Lora', serif; font-size:38px; font-weight:600; color:var(--green-dim); margin:6px 0;
+  }
+  .quiz-result .sub{font-size:13px; color:rgba(34,48,61,0.6); margin-bottom:20px;}
+  .restart-btn{
+    font-family:inherit; font-size:13px; padding:10px 20px; border-radius:4px;
+    border:none; background:var(--mustard); color:var(--navy-deep); cursor:pointer; font-weight:600;
+  }
+
+  .empty-state{text-align:center; color:rgba(242,235,216,0.5); font-size:13px; padding:40px 0; max-width:640px;}
+
+  /* Editor overlay */
+  .overlay{
+    position:fixed; inset:0; background:rgba(15,26,35,0.72);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:40px 16px; overflow:auto; z-index:10;
+  }
+  .editor-panel{
+    width:100%; max-width:680px; background:var(--navy-deep);
+    border:1px solid rgba(242,235,216,0.15); border-radius:8px; padding:26px 28px;
+  }
+  .editor-panel-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+  .editor-panel-header h3{font-family:'Lora', serif; font-size:18px; margin:0;}
+  .close-btn{background:none; border:none; color:rgba(242,235,216,0.6); font-size:18px; cursor:pointer;}
+  .close-btn:hover{color:var(--mustard);}
+  .card-list{display:flex; flex-direction:column; gap:14px; max-height:65vh; overflow:auto;}
+  .empty-cards{font-size:12px; color:rgba(242,235,216,0.4); padding:10px 0;}
+  .q-card{
+    background:rgba(242,235,216,0.04); border:1px solid rgba(242,235,216,0.1);
+    border-radius:6px; padding:14px 16px;
+  }
+  .q-card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:10px;}
+  .q-card textarea.q-text{
+    font-family:inherit; font-size:13px; background:none; color:rgba(242,235,216,0.92);
+    border:1px solid rgba(242,235,216,0.15); border-radius:4px; padding:8px 10px; width:100%;
+    resize:vertical; min-height:44px;
+  }
+  .q-card textarea.q-text:focus{outline:none; border-color:var(--mustard);}
+  .del-q{background:none; border:none; color:rgba(242,235,216,0.35); cursor:pointer; font-size:14px; flex-shrink:0;}
+  .del-q:hover{color:var(--rule-red);}
+  .opt-row{display:flex; align-items:center; gap:8px; margin-top:6px;}
+  .opt-row input[type=radio]{accent-color:var(--green); flex-shrink:0;}
+  .opt-row input[type=text]{
+    flex:1; font-family:inherit; font-size:12.5px; background:none; color:rgba(242,235,216,0.85);
+    border:1px solid rgba(242,235,216,0.12); border-radius:4px; padding:6px 8px;
+  }
+  .opt-row input[type=text]:focus{outline:none; border-color:var(--mustard);}
+  .opt-row.is-correct input[type=text]{border-color:rgba(63,107,79,0.6); color:#a9d3b7;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Acil Durum ve Afet Yönetimi <span>Çıkmış Sorular</span></h1>
+    <p>made by @huseyin.yalcin</p>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="drawer">
+    <div class="drawer-label">DERSLER</div>
+    <div id="deckList"></div>
+    <button class="new-deck" id="newDeckBtn">Yeni ders ekle.</button>
+    <button class="edit-link" id="editLink">Soruları düzenle.</button>
+  </nav>
+  <main id="mainArea"></main>
+</div>
+
+<div id="overlayRoot"></div>
+
+<script>
+(function(){
+  // ---------- State (in-memory only) ----------
+  // Her kart: {id, question, options:[5 metin], correctIndex}
+  let decks = [
+    {
+      id: 'akbed',
+      name: 'Arama Kurtarma Bilgisi ve Etik Değerler - Ara Sınavlar',
+      cards: 
+	[
+{id:1, question:"Aşağıdakilerden hangisi afetlerden önce hazırlık için çalışmaların ana hedeflerinden biri değildir?", options:["Sivil toplum kuruluşlarının faaliyetlerini organize etmek","Zarar görebilirlik ve risk analizini yapmak","Lojistik hizmet planlarını hazırlamak","Hasar tespiti yapmak","Kurtarma ve acil yardım planları oluşturmak"], correctIndex:3},
+{id:2, question:"Aşağıdakilerden hangisi arama kurtarmanın temel esaslarından, anlayışlı olmanın özelliklerinden biridir?", options:["Maddi kazanç sağlamak","Yapılan tüm yardım çağrılarına cevap vermek","Kişisel çıkarı göz ardı etmek","Küçük düşürücü ve/veya yüz kızartıcı suç işlememek","Doğaya ve insana saygı duymak"], correctIndex:4},
+{id:3, question:"UN-INSARAG kısaltması aşağıdaki kurumlardan hangisini temsil etmektedir?", options:["Uluslararası Arama ve Kurtarma Tavsiye Grubu","Birleşmiş Milletler İnsani Durumlar Koordinasyon Ofisi","Birleşmiş Milletler Afet Değerlendirme ve Koordinasyon Ekibi","Birleşmiş Milletler Olay yeri Operasyon Koordinasyon Merkezi","Birleşmiş Milletler Ortak Lojistik Merkezi"], correctIndex:0},
+{id:4, question:"Olası bir afet durumunda kişi, kurum ve kuruluşların organizasyon, koordinasyon ve tüm çalışma sürecini kapsayan hazırlık çalışmaları aşağıdakilerden hangisidir?", options:["Çalışma planı","Afet planı","Güvenlik planı","Risk analizi","Değerlendirme çalışması"], correctIndex:1},
+{id:5, question:"Dağda mahsur kalan kazazede ihbarının ardından yapılan çalışmalara ------- denir. Yukarıdaki cümlede boş bırakılan yeri aşağıdakilerden hangisi doğru olarak tamamlar?", options:["arama","risk","kaza","tehlike","afet"], correctIndex:0},
+{id:6, question:"Aşağıdakilerden hangisi uluslararası standartlara göre (INSARAG) ideal kentsel arama kurtarma ekibinin üyelerinden biri değildir?", options:["Paramedik","Grup lideri","Haberciler","K-9","Tim lideri"], correctIndex:2},
+{id:7, question:"Aşağıdakilerden hangisi INSARAG'ın hükümetleri, devlet kurumlarını, STK'ları ve afet hazırlık ve müdahale uzmanlarını bir araya getirme ve özellikle afete yatkın ülkeler ile USAR müdahale kapasitesine sahip ülke veya kuruluşu ağa katılmaya teşvik etme özelliğini ifade etmektedir?", options:["Kapsayıcılık","İhtiyaç odaklı olma","Farkındalıklara saygı","Profesyonellik","Kültürel hassasiyet"], correctIndex:0},
+{id:8, question:"Aşağıdakilerden hangisi afet ve acil durumlara ilişkin tek yetkili kurumdur?", options:["Sağlık Bakanlığı","Afet ve Acil Durum Yönetimi Başkanlığı","İçişleri Bakanlığı","Başbakanlık Müsteşarlığı","Genelkurmay Başkanlığı"], correctIndex:1},
+{id:9, question:"Aşağıdaki afetlerden hangisinde, illerde yükümlülük esasına göre halktan oluşturulan ekiplerin valiler tarafından gerekli görülmesi üzere göreve çağrılmaları ve merkezde Sivil Savunma Genel Müdürlüğü bünyesinde görev yapan memurlardan oluşturulan ekipler ile görev yapılmıştır?", options:["1993 Hekimbaşı Çöplük Patlaması","1999 Düzce Depremi","1995 Dinar Depremi","1999 Marmara depremi","1983 Erzurum depremi"], correctIndex:4},
+{id:10, question:"Afet sonrasında uzman ekipler gelinceye kadar halkın yardımına koşmak, uzman ekipler geldikten sonra da onların komutası altında destek faaliyeti yürütmek için var olan kişilere ne ad verilir?", options:["Halk","Mahalleli","Gönüllüler","Komşular","Gençler"], correctIndex:2},
+{id:11, question:"Aşağıdakilerden hangisi duvar ve tavanda çatlaklar, sıva dökülmesi ve taşıyıcı elemanlarda deprem dayanımını etkilemeyen küçük çatlakların olduğu binanın hasar durumunu tanımlamaktadır?", options:["Ağır hasar","Hafif hasar","Enkaz","Orta hasar","Çok ağır hasar"], correctIndex:1},
+{id:12, question:"Afetzedelerin ilkyardım ve naklinde sağlık durumuna göre öncelik uygulanmasına ne ad verilir?", options:["Dron","Makrofaj","Megafon","Triaj","Trifor"], correctIndex:3},
+{id:13, question:"Depremin büyüklüğünü sayısal olarak gösteren değere ne ad verilir?", options:["Pascal","Ton","Richter","Dopter","Mt/kg"], correctIndex:2},
+{id:14, question:"Deprem arama kurtarma çalışmalarında, arama çalışmaları sonucu yeri ve durumu belirlenen afetzedelerin, bulundukları yerden güvenli alana taşınması işlemine ne ad verilir?", options:["Kurtarma çalışmaları","Arama çalışmaları","Güvenlik","İlkyardım çalışmaları","Haber alma"], correctIndex:0},
+{id:15, question:"Aşağıdakilerden hangisi depremin yarattığı 'Cisim dalgaları'ndandır?", options:["G dalgası","A dalgası","Q dalgası","K dalgası","S dalgası"], correctIndex:4},
+{id:16, question:"Doğa ya da dağ kazalarında yardım için arama kurtarma ekiplerine yapılacak çağrıda aşağıdaki bilgilerden hangisine gerek yoktur?", options:["Arama kurtarma çalışmaları için düşünülen yöntem","Arama kurtarma çalışmalarının kaç gün olacağı","Kazazedelerin en son görüldüğü yer","Olayın nerede olduğu","Olayın ne olduğu"], correctIndex:1},
+{id:17, question:"Aşağıdakilerden hangisi, kısmen büyük alanların aranmasında kullanılan bir yöntemdir?", options:["Sektörel arama tekniği","Temasla arama tekniği","Vektörel arama tekniği","Alan tarama tekniği","Hat süpürme tekniği"], correctIndex:3},
+{id:18, question:"Kişi kaynaklı ya da doğa olayları nedenleriyle, bulunduğu yer ve durumdan kendi olanaklarıyla kurtulamama, yer ve pozisyonunu değiştirememe durumuna ne ad verilir?", options:["Kaybolma","Yaralanma","Kaza","Afet","Mahsur kalma"], correctIndex:4},
+{id:19, question:"Çoğunlukla dağda tırmanış sırasında mahsur kalan veya kaza geçirerek yaralanmış kişiler için dikey kurtarma tekniklerin kullanıldığı kurtarma türü aşağıdakilerden hangisidir?", options:["Basit kurtarma","Klasik kurtarma","Genel kurtarma","Teknik kurtarma","Özel kurtarma"], correctIndex:3},
+{id:20, question:"Havada ve yerde uygulanan 'S' biçiminde bir rota kullanarak aramanın yapıldığı teknik aşağıdakilerden hangisidir?", options:["Sektörel arama tekniği","Temasla arama tekniği","Paralel arama tekniği","Keşif arama tekniği","Hat (süpürme) tekniği"], correctIndex:2},
+
+{id:21, question:"Teorik eğitimler başarılı bir arama kurtarma çalışmasının hangi aşaması içerisinde yer alır?", options:["Operasyon","Değerlendirme","Ön hazırlık","Teorik altyapı","Finans ve yönetim"], correctIndex:2},
+{id:22, question:"Aşağıdakilerden hangisi can ve mal kayıpları ile birlikte sosyo-ekonomik düzeni etkileyerek afetlere sebep olur?", options:["Doğa olayları","Risk","Kaza","Olay","Tehlike"], correctIndex:3},
+{id:23, question:"Oda, sendika, vakıf ve dernek adı altında faaliyet gösteren, toplumun ihtiyaçlarını karşılayabilmek için eğitim, sağlık, çevre, yardımlaşma ve dayanışma, ilk yardım ve arama kurtarma gibi alanlarda çalışmalar yapan kuruluşlar aşağıdakilerden hangisidir?", options:["Sivil toplum kuruluşları","INSARAG","Sivil savunma kuruluşları","Askeri birlikler","AFAD"], correctIndex:0},
+{id:24, question:"Mudanya Belediyesi Arama Kurtarma (MAK), Kadıköy Belediyesi Arama Kurtarma Ekibi, Çiğli Belediyesi Arama Kurtarma ekibi gibi kurtarma ekipleri aşağıdaki kurtarma ekiplerinden hangisine örnek olarak gösterilebilir?", options:["Sivil dernekler","Resmi kurtarma organizasyonları","Gönüllü kurtarma ekipleri","Askeri kurtarma organizasyonları","Yerel yönetim ekipleri"], correctIndex:4},
+{id:25, question:"Aşağıdakilerden hangisi lojistik desteği içerisinde yer alır?", options:["İletişim","Ulaşım","Yöntem","Yardımcı araçlar","Yiyecek içecek"], correctIndex:4},
+{id:26, question:"Aşağıdakilerden hangisi, Arama Kurtarma Ekibinin etkin şekilde çalışabilmesi için gerekli temel özelliklerdendir?", options:["Ekip ruhu","Farkındalıklara saygı","Profesyonellik","Kültürel hassasiyet","İhtiyaç odaklılık, Eşgüdüm"], correctIndex:0},
+{id:27, question:"Aşağıdakilerden hangisi Türkiye'nin afet konusunda işbirliği yaptığı uluslararası kurum ve kuruluşlar arasında yer alır?", options:["UNECE","UN-OCHA","IMF","UNESCO","Dünya Bankası"], correctIndex:1},
+{id:28, question:"Ulusal standartlara göre Arama Kurtarma Ekibi, en az kaç kişiden oluşmaktadır?", options:["4","5","6","7","8"], correctIndex:2},
+{id:29, question:"Olası bir afet durumunda kişi, kurum ve kuruluşların organizasyon, koordinasyon ve tüm çalışma sürecini kapsayan hazırlık çalışmalarına ne ad verilir?", options:["Afet planı","Güvenlik planı","Risk analizi","Değerlendirme çalışması","Çalışma planı"], correctIndex:0},
+{id:30, question:"Arama kurtarma ekibi üyeleri arasında malzeme, gıda, temizlik gibi ihtiyaçlarının teminini sağlamak hangi ekip üyesinin görevidir?", options:["Güvenlik sorumlusu","İrtibat görevlisi","Lojistik","Ekip lideri","Haberleşme"], correctIndex:2},
+{id:31, question:"\"Doğa ya da dağda kaybolan, mahsur kalan veya kaza geçirenleri kurtarmak için kullanılan özel teknik bilgi, ekipman ve beceri gerektiren uygulamalara ------- denir.\" Yukarıdaki cümlede boş bırakılan yeri aşağıdakilerden hangisi doğru olarak tamamlar?", options:["Basit kurtarma","Teknik kurtarma","İki kurtarıcıyla alma","İp üzerinden alma","Dört el oturak"], correctIndex:1},
+{id:32, question:"Rayleigh ve Love dalgaları biçiminde türleri olan deprem dalgası aşağıdakilerden hangisidir?", options:["Sismik dalgalar","Cisim dalgaları","Gerilimler","Yüzey dalgaları","Kırık dalgalar"], correctIndex:3},
+{id:33, question:"Yapılacak arama kurtarma çalışma türünü, strateji, yöntem ve tekniklerini belirleme amacıyla yapılan arama aşağıdakilerden hangisidir?", options:["Temasla arama","Keşif araması","Süpürme tekniği","Sektörel arama","Hat tekniği"], correctIndex:1},
+{id:34, question:"Deprem odağına en yakın yani merkez üssü olarak adlandırılan bölgeden yayılan dünyanın yüzeyi boyunca ve çok yavaş ilerleyen dalgalara ne ad verilir?", options:["P dalgası","S dalgası","Cisim dalgaları","Su dalgası","Yüzey dalgaları"], correctIndex:4},
+{id:35, question:"Aşağıdakilerden hangisi sondalamayla arama teknikleri arasında yer alır?", options:["Temasla arama","Sektörel arama","Alan arama","Kaba arama","Kar altında arama"], correctIndex:3},
+{id:36, question:"Gerek görüldüğünde kazazedeye ilk yardım uygulamasının ardından, uygun biçimde sedyeye aktarma ve taşıma sırasında hiçbir zarar görmemesi için yapılan sabitleme gibi çeşitli önlemlerin alınması işlemlerine ne ad verilir?", options:["Paralel arama tekniği","Sedyeleme","Zincir tekniği","Kaba arama","İnce arama"], correctIndex:1},
+{id:37, question:"Aşağıdakilerden hangisi P dalgalarının özellikleri arasında yer almaz?", options:["Boyuna dalgalardır.","Her ortamda yayılırlar.","Sismograma ilk ulaşan dalgalardır.","Enine dalgalardır.","Yıkım etkileri düşüktür."], correctIndex:3},
+{id:38, question:"Aşağıdakilerden hangisi yapısal hasarlar arasında yer almaz?", options:["Bina çökmesi","Binaların çarpılması","Binalarda çatlaklar oluşması","Fabrika hasarları","Elektrik şebekesi hasarları"], correctIndex:4},
+{id:39, question:"Aşağıdakilerden hangisi doğa kazasının kişi kaynaklı nedenidir?", options:["Panik olma","Hatalı malzeme","Hava koşulları","Coğrafi zorluklar","Doğa olayları"], correctIndex:0},
+
+{id:40, question:"Aşağıdakilerden hangisi özellikle afet anlarında medikal müdahale yapmak üzere görevlendirilen ekiplerdendir?", options:["112","İtfaiye","UMKE","AFAD","UN-OCHA"], correctIndex:2},
+{id:41, question:"Mahallin en büyük mülkiye amiri sivil savunma hizmetlerinin planlanması ve karşılıklı yardım hususlarında mahallin garnizon komutanı yoksa kim ile iş birliği yapar?", options:["Belediye başkanı","Valiler","Kaymakamlar","Emniyet müdürü","En büyük askeri amiri"], correctIndex:4},
+{id:42, question:"AFAD Başkanlığı aşağıdakilerden hangisine doğrudan bağlıdır?", options:["Cumhurbaşkanlığı","Çevre, şehircilik ve İklim değişikliği bakanlığı","Dışişleri Bakanlığı","İçişleri Bakanlığı","Hazine ve Maliye Bakanlığı"], correctIndex:3},
+{id:43, question:"INSARAG Çalışma Grubunun süresinin, verilen görev süresini aşacak şekilde uzatılmasına Cenevre'deki yıllık toplantısında kim tarafından karar verilir?", options:["Yürütme Grubu","INSARAG Sekreterliği","Yargı Grubu","Yasama Grubu","INSARAG Bölge Grubu"], correctIndex:0},
+{id:44, question:"INSARAG bünyesinde yürütme grubu kararlarının bölgesel seviyede uygulanmasından ve bölge için planlanan yıllık iş programı ve faaliyetlerin yürütülmesinden sorumlu olan birim aşağıdakilerden hangisidir?", options:["Bölge grupları","Yürütme grubu","USAR ekip liderleri","OCHA grubu","Ülke büroları"], correctIndex:0},
+{id:45, question:"Aşağıdakilerden hangisi UMKE timlerinin yapılandırma sistemleri arasında yer almaz?", options:["KBRN Timi","Mağara kurtarma","Hava kurtarma","Su kurtarma","Dağda kurtarma"], correctIndex:1},
+{id:46, question:"Arama Kurtarma timinde timin malzeme, gıda, temizlik vb ihtiyaçlarının teminini sağlamakla sorumlu birim aşağıdakilerden hangisidir?", options:["Haberleşme","Doktor","Lojistik","İrtibat Görevlisi","Güvenlik Sorumlusu"], correctIndex:2},
+{id:47, question:"Aşağıdakilerden hangisi afet olarak tanımlanamaz?", options:["Kuraklık","Ay tutulması","Heyelan","Nükleer patlama","Meteor düşmesi"], correctIndex:1},
+{id:48, question:"Afet sonrası \"altın saatler\" olarak adlandırılan ve her bireyin hazırlıklı olmasının büyük önem taşıdığı saatler, hangi zaman dilimidir?", options:["İlk 30 dakika","İlk 2 saat","İlk 24 saat","İlk 48 saat","İlk 72 saat"], correctIndex:4},
+{id:49, question:"Kazazedenin bulunduğu yer ve durumunun tespiti için yapılan çalışmaların bütününe ne ad verilir?", options:["Kaza","İlk yardım","Arama","Acil","Afet"], correctIndex:2},
+{id:50, question:"Aşağıdakilerden hangisi, kısmen büyük alanların aranmasında kullanılan bir yöntemdir?", options:["Vektörel arama tekniği","Hat süpürme tekniği","Sektörel arama tekniği","Temasla arama tekniği","Alan tarama tekniği"], correctIndex:4},
+{id:51, question:"Aşağıdakilerden hangisi ilk yardım çantası içerisinde yer almaz?", options:["Plastik örtü","Atel","Cımbız","Kan grubu kiti","Plaster"], correctIndex:3},
+{id:52, question:"\"Çığ altında kalan personeli aramakta kullanılan 1.25 cm.çapında, 3 mt uzunluğunda, içi boş (bazıları dolu) sert alüminyum katlanabilen bir borudur.\" Yukarıda tanımı verilen ekipman aşağıdakilerden hangisidir?", options:["Askı ipi","Çığ kaytanı","Çığ küreği","Çığ sondası","Derin ölçüsü"], correctIndex:3},
+{id:53, question:"Depremden sonra binalardaki hasar tespitleri kimler tarafından yapılır?", options:["İki inşaat mühendisi (biri mimar olabilir)","Arama kurtarma görevlisi","Güvenlik görevlisi","Emniyet çalışanları","Lojistik görevlisi"], correctIndex:0},
+{id:54, question:"\"-------- sonucunda yer kabuğu içerisinde oluşan titreşimlerin dalgalar halinde yayılmasıyla evler ve binalar yıkılır, can kayıpları ve yaralanmalar olabilir.\" Yukarıdaki cümlede boş bırakılan yeri aşağıdakilerden hangisi doğru olarak tamamlar?", options:["Fırtına","Biyokimyasal saldırı","Sel","Heyelan","Deprem"], correctIndex:4},
+{id:55, question:"Çoğunlukla dağda tırmanış sırasında mahsur kalan veya kaza geçirerek yaralanmış kişiler için dikey kurtarma tekniklerin kullanıldığı kurtarma türü aşağıdakilerden hangisidir?", options:["Teknik kurtarma","Basit kurtarma","Klasik kurtarma","Özel kurtarma","Genel kurtarma"], correctIndex:0},
+{id:56, question:"\"Enkaza girilecek kısım belirlenerek beton plakalar kat kat kesilerek kaldırılır. Bu sistemde kompresör, vinç ve kepçe gibi ağır iş makineleri kullanılabilir.\" Yukarıda açıklanan arama kurtarma tekniği aşağıdakilerden hangisidir?", options:["Afetzedenin taşınması","İşaretleme","Üstten giriş","Enkazın kaldırılması","Yandan giriş"], correctIndex:3},
+{id:57, question:"Aşağıdakilerden hangisi yapısal olmayan hasarlara karşı alınacak önlemlerden biridir?", options:["Ev ya da binalarımızı dere kenarlarına yapmamak","Gaz vanası ve elektrik sigortalarını, olası yangına karşı otomatik hale getirmek","Yapıları amacına uygun yapmak ve kullanmak","Yapı Tekniğine ve İnşaat Yönetmeliğine uygun olarak yapı yapmak","İmar planında konuta ayrılmış yerler dışındaki yerlere ev ve bina yapmamak"], correctIndex:1},
+{id:58, question:"Olay ve mağdurun yeri, bölgesi, arazinin yapısı ve durumu, …vb. bilgilerin yetersiz olduğu durumda 2-3 kişilik çok deneyimli personelden oluşan bir ekip ve basit ekipmanlarla yapılan kısa süreli araştırmalara ne ad verilir?", options:["Alan tarama","Keşif","Sektörel","Kare","Spiral"], correctIndex:1},
+{id:59, question:"Doğa ya da dağ kazalarında yardım için arama kurtarma ekiplerine yapılacak çağrıda aşağıdaki bilgilerden hangisine gerek yoktur?", options:["Olayın ne olduğu","Arama kurtarma çalışmaları için düşünülen yöntem","Arama kurtarma çalışmalarının kaç gün olacağı","Kazazedelerin en son görüldüğü yer","Olayın nerede olduğu"], correctIndex:2},
+
+{id:60, question:"Aşağıdakilerden hangisi \"INSARAG, INSARAG ağı tarafından kararlaştırılan ilke ve asgari standartları yayarken ortak hedeflere ulaşma konusunda USAR ekiplerinin farklı işletme prosedürlerini kabul eder ve bunlara saygı gösterir.\" olarak tanımlanan ilkedir?", options:["Kapsayıcılık","Hassasiyet","Eşgüdüm","Farklılıklara saygı","İhtiyaç odaklı"], correctIndex:3},
+{id:61, question:"Aşağıdakilerden hangisi, Arama Kurtarma Ekibinin etkin şekilde çalışabilmesi için gerekli temel özelliklerdendir?", options:["Ekip ruhu","Profesyonellik","İhtiyaç odaklılık, Eşgüdüm","Kültürel hassasiyet","Farkındalıklara saygı"], correctIndex:0},
+{id:62, question:"\"Operasyon alanında görev yapan timlerin görevlerini ve takibini sağlar. Ekip liderine karşı sorumludur, ekip liderinden gelen talimatları sahadaki Grup liderlerine iletir. Sahadaki Grup liderlerinden gelen raporları ekip liderine iletir.\" Yukarıda tanımlanan görev aşağıdaki ekip üyelerinden hangisine aittir?", options:["Güvenlik Sorumlusu","İrtibat Görevlisi","Ekip Lideri","Ekip Lider Yardımcısı","Lojistik"], correctIndex:3},
+{id:63, question:"Aşağıdakilerden hangisi genel ekipmanlar arasında yer alır?", options:["Dinleme cihazı","Yüzme paleti","Dron","Köpek","İp"], correctIndex:4},
+{id:64, question:"Aşağıdakilerden hangisi Türkiye'nin afet konusunda işbirliği yaptığı uluslararası kurum ve kuruluşlar arasında yer alır?", options:["IMF","UNECE","UN-OCHA","UNESCO","Dünya Bankası"], correctIndex:2},
+{id:65, question:"I. Ekiplerin oluşturulması II. Ulaşımın sağlanması III. Planlamanın yapılması IV. İletişim ve haberleşmenin sağlanması V. Kayıt ve raporların hazırlanması Yukarıdakilerden hangileri arama kurtarma işleminin operasyon aşamasına aittir?", options:["IV ve V","I, II ve IV","I, II ve V","III, IV ve V","I, II, III ve V"], correctIndex:1},
+{id:66, question:"UMKE timi en az kaç personelden oluşur?", options:["2","4","5","6","12"], correctIndex:2},
+{id:67, question:"Aşağıdakilerden hangisi arama kurtarmanın temel özellikleri arasında yer almaz?", options:["Anlayışlı olmak","Gönüllü olmak","Kanunlara uymak","İlk yardım bilmek","Spor yapmak"], correctIndex:4},
+{id:68, question:"INSARAG Yürütme Grubunda aşağıdaki kurumlardan hangisi bulunur?", options:["USAR","IEC","AIESEC","BM","Kızıl Haç"], correctIndex:4},
+{id:69, question:"Aşağıdakilerden hangisi uluslararası standartlara göre (INSARAG) ideal kentsel arama kurtarma ekibinin üyelerinden biri değildir?", options:["K-9","Paramedik","Haberciler","Tim lideri","Grup lideri"], correctIndex:2},
+{id:70, question:"Yerin derinliklerinde ergimiş maddenin yeryüzüne çıkışı sırasındaki fiziksel ve kimyasal olaylar sonucunda oluşan gazların neden olduğu patlamalarla oluşan depremlere ne ad verilir?", options:["Çöküntü depremleri","Volkanik depremler","Diğer depremler","Tektonik depremler","Derin depremler"], correctIndex:1},
+{id:71, question:"Arama alanı yaklaşık ikiye bölecek biçimde düz bir rota üzerinde yapılan arama tekniğine ne ad verilir?", options:["Keşif","Hat","Süpürme","Sektörel","Alan"], correctIndex:3},
+{id:72, question:"Aşağıdakilerden hangisi doğa ve dağ kazalarında kişiden kaynaklanmayan nedenler arasında yer alır?", options:["Bilgi yetersizliği","Antrenman eksikliği","Fiziksel yetersizlik","Malzemenin yetersizliği","Tecrübe eksikliği"], correctIndex:3},
+{id:73, question:"Gerek görüldüğünde kazazedeye ilk yardım uygulamasının ardından, uygun biçimde sedyeye aktarma ve taşıma sırasında hiçbir zarar görmemesi için yapılan sabitleme gibi çeşitli önlemlerin alınması işlemlerine ne ad verilir?", options:["Sedyeleme","Zincir tekniği","Paralel arama tekniği","Kaba arama","İnce arama"], correctIndex:0},
+{id:74, question:"Deprem arama kurtarma operasyonları genellikle hangi aşama ile sonlanır?", options:["Basın ve halkla ilişkilerin oluşturulması","Güvenliğin sağlanması","Kurtarma çalışmaları","Altyapı çalışmaları","Hasar tespiti ve enkazın ortadan kaldırılması"], correctIndex:4},
+{id:75, question:"Aşağıdakilerden hangisi deprem arama kurtarma operasyonları için genel olarak sürdürülen aşamalar arasında yer almaz?", options:["Rehabilitasyon","İlk yardım","Ulaşım","İhtiyaçlar","Haber alma"], correctIndex:0},
+{id:76, question:"Kişi kaynaklı ya da doğa olayları nedenleriyle, bulunduğu yer ve durumdan kendi olanaklarıyla kurtulamama, yer ve pozisyonunu değiştirememe durumuna ne ad verilir?", options:["Mahsur kalma","Yaralanma","Kaybolma","Kaza","Afet"], correctIndex:0},
+{id:77, question:"Afetzedelerin ilkyardım ve naklinde sağlık durumuna göre öncelik uygulanmasına ne ad verilir?", options:["Megafon","Dron","Triaj","Trifor","Makrofaj"], correctIndex:2},
+{id:78, question:"Depremden sonra binanın duvar ve tavanında çatlaklar, sıva dökülmesi ve taşıyıcı elemanlarda deprem dayanımını etkilemeyen küçük çatlakların bulunduğu hasara ne ad verilir?", options:["Çok Ağır Hasar","Hafif Hasar","Orta Hasar","Enkaz","Ağır Hasar"], correctIndex:1},
+
+{id:79, question:"Aşağıdakilerden hangisi kullanım amaçlarına göre arama kurtarma ekipmanları arasında yer alan \"genel ekipmanlar\"dan biridir?", options:["Köpek","İp","Dinleme cihazı","Dron","Yüzme paleti"], correctIndex:1},
+{id:80, question:"Aşağıdakilerden hangisi özellikle afet anlarında medikal müdahale yapmak üzere görevlendirilen ekiplerdendir?", options:["AFAD","UMKE","112","İtfaiye","UN-OCHA"], correctIndex:1},
+{id:81, question:"Sıklıkla haberlerde karşılaştığımız, polis ve jandarma gibi kolluk kuvvetleriyle vatandaşların dahil olduğu arama kurtarma çalışmaları aşağıdakilerden hangisidir?", options:["Basit arama kurtarma çalışmaları","Zor arama kurtarma çalışmaları","Arazi arama çalışmaları","İlk yardım çalışmaları","Lojistik kurtarma çalışmaları"], correctIndex:0},
+{id:82, question:"Arama Kurtarma konusunda ------- için uzman kişileri ve kurumları bilmek yararlıdır. Yukarıdaki cümlede boş bırakılan yeri aşağıdakilerden hangisi doğru olarak tamamlar?", options:["yemek yapmak","girişimcilik","yatırım yapmak","araba kullanmak","yardım istemek"], correctIndex:4},
+{id:83, question:"Aşağıdakilerden hangisi afet ve acil durum yönetimi konusunda işbirliği yapılan uluslararası kuruluşlar arasında yer almaz?", options:["RED-CROSS","WHO","UN-UNJLC","UN-ISDR","IMF"], correctIndex:4},
+{id:84, question:"Emniyet ve asayiş amaçlı devriye, arama ve kurtarma faaliyetleri, hasta ve yaralıları tahliye etme, dağlık ve ormanlık bölgelerde önleyici kolluk ile gerektiğinde suça el koyma görevlerini icra etmek maksadıyla kurulmuş olan arama kurtarma ekibi aşağıdakilerden hangisidir?", options:["Yerel yönetim ekipleri","Belediye ekipleri","Doğal afetler arama kurtarma taburu","Sivil savunma birlikleri","Jandarma dağ arama kurtarma timi"], correctIndex:4},
+{id:85, question:"INSARAG bünyesinde yürütme grubu kararlarının bölgesel seviyede uygulanmasından ve bölge için planlanan yıllık iş programı ve faaliyetlerin yürütülmesinden sorumlu olan birim aşağıdakilerden hangisidir?", options:["Bölge grupları","OCHA grubu","Ülke büroları","USAR ekip liderleri","Yürütme grubu"], correctIndex:0},
+{id:86, question:"Mudanya Belediyesi Arama Kurtarma (MAK), Kadıköy Belediyesi Arama Kurtarma Ekibi, Çiğli Belediyesi Arama Kurtarma Ekibi gibi kurtarma ekipleri aşağıdakilerden hangisine örnek olarak gösterilebilir?", options:["Resmi kurtarma organizasyonlarına","Yerel yönetim ekiplerine","Sivil derneklere","Gönüllü kurtarma ekiplerine","Askeri kurtarma organizasyonlarına"], correctIndex:1},
+{id:87, question:"------- rolü, çökmüş yapıların bulunduğu acil durumlarda afetten etkilenen bir ülkeyi desteklemek için etkili ve ilkeli uluslararası USAR yardımını hazırlamak, seferber etmek ve koordine etmek; uluslararası, bölgesel, alt bölgesel ve ulusal seviyede kapasite geliştirmeyi desteklemektir. Yukarıdaki cümlede boş bırakılan yeri aşağıdakilerden hangisi doğru şekilde tamamlar?", options:["INSARAG","FEMA","OCHA","WHO","WB"], correctIndex:0},
+{id:88, question:"Afet sonrası kullanılan altın saat terimi kaç saatlik bir zaman aralığını içerir?", options:["24","36","48","56","72"], correctIndex:4},
+{id:89, question:"Aşağıdakilerden hangisi yapısal hasarlar arasında yer almaz?", options:["Kolonlarda çatlaklar oluşması","Duvarlarda çatlaklar oluşması","Elektrik şebekesi hasarları","Kolon ve kirişlerde ayrılmalar olması","Bina çökmesi"], correctIndex:2},
+{id:90, question:"Bir depremin orta derinlikte depremler grubuna girebilmesi için olması gereken derinlik aralığı aşağıdakilerden hangisinde doğru olarak verilmiştir?", options:["0-60 mt","60-300 mt","0-60 km","60-300 km","350-900 km"], correctIndex:3},
+{id:91, question:"Aşağıdakilerden hangisi depremlerde kullanılan özel amaçlı ekipmanlar içerisinde yer alır?", options:["Hava kompresörü","Ceset torbası","Arama köpeği","Sedye","Spiral kesme"], correctIndex:2},
+{id:92, question:"-------- sonucunda yer kabuğu içerisinde oluşan titreşimlerin dalgalar halinde yayılmasıyla evler ve binalar yıkılır, can kayıpları ve yaralanmalar olabilir. Yukarıdaki cümlede boş bırakılan yeri aşağıdakilerden hangisi doğru şekilde tamamlar?", options:["Deprem","Biyokimyasal saldırı","Sel","Fırtına","Heyelan"], correctIndex:0},
+{id:93, question:"Aşağıdakilerden hangisi depremle oluşan yüzey dalgasıdır?", options:["T","Cisim","Love","P","Düzenli"], correctIndex:2},
+{id:94, question:"Arama kurtarma tekniği belirlenirken değerlendiren etkenler düşünüldüğünde aşağıdakilerden hangisi olayın niteleğini ifade eder?", options:["Kişisel ekipman","Yağmurlu hava","Kayıp","Çok amaçlı ekipman","Orman"], correctIndex:2},
+{id:95, question:"Gerek görüldüğünde kazazedeye ilk yardım uygulamasının ardından, uygun biçimde sedyeye aktarma ve taşıma sırasında hiçbir zarar görmemesi için yapılan sabitleme gibi çeşitli önlemlerin alınması işlemlerine ne ad verilir?", options:["Zincir tekniği","Sedyeleme","Paralel arama tekniği","İnce arama","Kaba arama"], correctIndex:1},
+{id:96, question:"Doğa ya da dağda kaybolan, mahsur kalan veya kaza geçirenleri kurtarmak için kullanılan özel teknik bilgi, ekipman ve beceri gerektiren uygulamalara ne ad verilir?", options:["Basit kurtarma","İki kurtarıcıyla alma","Dört el oturak","Teknik kurtarma","İp üzerinden alma"], correctIndex:3},
+{id:97, question:"Arama personellerinin belirli aralıklarla dizilerek çizgi halinde ileriye doğru yaptığı arama tekniği aşağıdakilerden hangisidir?", options:["Kare tekniği","Keşif araması","Sektörel arama","Süpürme tekniği","Alan tarama"], correctIndex:3},
+{id:98, question:"- Sürekli hareket etme davranışı gösterir. - Ana yol ve patikaları tercih eder. - Yüksek yerlere çıkmak ister. - Panik halindedir. - Bilinçli ya da bilinçsiz iz bırakır. Yukarıda verilen davranışları sergileyen bir kimse için aşağıdakilerden hangisi söylenebilir?", options:["Enkaz altındadır.","Yaralıdır.","Düşmüştür.","Kaybolmuştur.","Hastadır."], correctIndex:3},
+]
+    }
+  ];
+
+  let activeDeckId = decks[0] ? decks[0].id : null;
+  let editorOpen = false;
+
+  // Quiz/test state
+  let queue = [];
+  let totalCount = 0;
+  let correctCount = 0;
+  let mistakeCount = 0;
+  let answered = false;
+  let lastAnswerCorrect = null;
+
+  const deckListEl = document.getElementById('deckList');
+  const mainArea = document.getElementById('mainArea');
+  const overlayRoot = document.getElementById('overlayRoot');
+  const newDeckBtn = document.getElementById('newDeckBtn');
+  const editLink = document.getElementById('editLink');
+
+  function activeDeck(){ return decks.find(d => d.id === activeDeckId); }
+  function nextId(deck){ return deck.cards.reduce((m,c)=>Math.max(m,c.id),0) + 1; }
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  const LETTERS = ['A','B','C','D','E','F'];
+
+  function renderDeckList(){
+    deckListEl.innerHTML = decks.map(d => `
+      <button class="deck-btn ${d.id===activeDeckId?'active':''}" data-id="${d.id}">
+        <span>${escapeHtml(d.name)}</span>
+        <small>${d.cards.length}</small>
+      </button>
+    `).join('');
+    deckListEl.querySelectorAll('.deck-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        if(btn.dataset.id === activeDeckId) return;
+        activeDeckId = btn.dataset.id;
+        renderAll();
+      });
+    });
+  }
+
+  newDeckBtn.addEventListener('click', ()=>{
+    const name = prompt('Yeni setin adı nedir?');
+    if(!name || !name.trim()) return;
+    const id = 'set-' + Date.now();
+    decks.push({id, name: name.trim(), cards:[]});
+    activeDeckId = id;
+    renderAll();
+  });
+
+  editLink.addEventListener('click', ()=>{
+    if(!activeDeck()) return;
+    editorOpen = true;
+    renderAll();
+  });
+
+  function renderAll(){
+    renderDeckList();
+    renderMain();
+    renderOverlay();
+  }
+
+  // ---------- Test / quiz ----------
+  function buildQueue(deck){
+    const order = shuffle(deck.cards);
+    return order.map(card=>{
+      const correctText = card.options[card.correctIndex];
+      const options = shuffle(card.options.slice());
+      return {cardId: card.id, front: card.question, answer: correctText, options};
+    });
+  }
+
+  function startTest(deck){
+    queue = buildQueue(deck);
+    totalCount = deck.cards.length;
+    correctCount = 0;
+    mistakeCount = 0;
+    answered = false;
+    lastAnswerCorrect = null;
+  }
+
+  function renderMain(){
+    const deck = activeDeck();
+    if(!deck){
+      mainArea.innerHTML = `<p class="empty-state">Henüz bir set yok. Sol taraftan "+ yeni set" ile bir set oluştur.</p>`;
+      return;
+    }
+
+    mainArea.innerHTML = `
+      <div class="deck-heading">
+        <div>
+          <h2>${escapeHtml(deck.name)}</h2>
+          <div class="count">${deck.cards.length} soru</div>
+        </div>
+      </div>
+      <div id="testBody"></div>
+    `;
+    const body = document.getElementById('testBody');
+
+    if(deck.cards.length < 2){
+      body.innerHTML = `<p class="empty-state">Bu sette henüz test başlatmaya yetecek kadar soru yok (en az 2 gerekiyor).</p>`;
+      return;
+    }
+
+    if(queue.length === 0 && correctCount === 0 && mistakeCount === 0){
+      startTest(deck);
+    }
+
+    renderTestBody(deck, body);
+  }
+
+  function renderTestBody(deck, body){
+    const finished = queue.length === 0;
+
+    if(finished){
+      body.innerHTML = `
+        <div class="progress-wrap">
+          <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+          <div class="progress-label"><span>${totalCount} / ${totalCount} doğru</span><span>${mistakeCount} yanlış deneme</span></div>
+        </div>
+        <div class="quiz-box quiz-result">
+          <div class="badge">TUR TAMAMLANDI</div>
+          <div class="score">${totalCount} / ${totalCount}</div>
+          <div class="sub">${mistakeCount === 0 ? 'Tek denemede tamamladın.' : mistakeCount + ' yanlış denemeden sonra tüm sorular doğru işaretlendi.'}</div>
+          <button class="restart-btn" id="restartBtn">Turu tekrar başlat</button>
+        </div>
+      `;
+      document.getElementById('restartBtn').addEventListener('click', ()=>{
+        startTest(deck);
+        renderMain();
+      });
+      return;
+    }
+
+    const q = queue[0];
+    const pct = Math.round((correctCount/totalCount)*100);
+
+    body.innerHTML = `
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="progress-label"><span>${correctCount} / ${totalCount} doğru</span><span>kalan: ${queue.length}</span></div>
+      </div>
+      <div class="quiz-box">
+        <div class="quiz-eyebrow">SORU</div>
+        <div class="quiz-q">${escapeHtml(q.front)}</div>
+        <div class="quiz-options">
+          ${q.options.map((opt,i) => `<button class="quiz-option" data-opt="${escapeHtml(opt)}"><span class="opt-letter">${LETTERS[i]})</span><span>${escapeHtml(opt)}</span></button>`).join('')}
+        </div>
+        <div class="quiz-footer">
+          <span>${mistakeCount} yanlış deneme</span>
+          <button class="quiz-next" id="nextQ" ${answered?'':'disabled'}>${queue.length>1 || lastAnswerCorrect===false ? 'Sonraki →' : 'Bitir →'}</button>
+        </div>
+      </div>
+    `;
+
+    const optionButtons = body.querySelectorAll('.quiz-option');
+    optionButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        if(answered) return;
+        answered = true;
+        const chosen = btn.dataset.opt;
+        const isCorrect = chosen === q.answer;
+        lastAnswerCorrect = isCorrect;
+
+        optionButtons.forEach(b=>{
+          b.disabled = true;
+          if(b.dataset.opt === q.answer) b.classList.add('correct');
+          else if(b === btn && !isCorrect) b.classList.add('wrong');
+        });
+
+        if(isCorrect){ correctCount++; } else { mistakeCount++; }
+        document.getElementById('nextQ').disabled = false;
+      });
+    });
+
+    document.getElementById('nextQ').addEventListener('click', ()=>{
+      const wasCorrect = lastAnswerCorrect;
+      queue.shift();
+      if(!wasCorrect){ queue.push(q); }
+      answered = false;
+      lastAnswerCorrect = null;
+      renderTestBody(deck, body);
+    });
+  }
+
+  // ---------- Editor overlay (yalnızca düzenleme/silme — ekleme yok) ----------
+  function renderOverlay(){
+    if(!editorOpen){ overlayRoot.innerHTML = ''; return; }
+    const deck = activeDeck();
+    if(!deck){ editorOpen = false; overlayRoot.innerHTML = ''; return; }
+
+    overlayRoot.innerHTML = `
+      <div class="overlay" id="overlayBg">
+        <div class="editor-panel">
+          <div class="editor-panel-header">
+            <h3>${escapeHtml(deck.name)} — Soruları düzenle</h3>
+            <button class="close-btn" id="closeEditor">✕</button>
+          </div>
+          <div class="card-list" id="cardList">
+            ${deck.cards.map(c => `
+              <div class="q-card" data-id="${c.id}">
+                <div class="q-card-top">
+                  <textarea class="q-text" data-id="${c.id}">${escapeHtml(c.question)}</textarea>
+                  <button class="del-q" data-id="${c.id}" title="Soruyu sil">✕</button>
+                </div>
+                ${c.options.map((opt,i)=>`
+                  <div class="opt-row ${i===c.correctIndex?'is-correct':''}">
+                    <input type="radio" name="correct-${c.id}" data-id="${c.id}" data-idx="${i}" ${i===c.correctIndex?'checked':''}>
+                    <input type="text" class="opt-text" data-id="${c.id}" data-idx="${i}" value="${escapeHtml(opt)}">
+                  </div>
+                `).join('')}
+              </div>
+            `).join('') || '<div class="empty-cards">Bu sette henüz soru yok.</div>'}
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('overlayBg').addEventListener('click', (e)=>{
+      if(e.target.id === 'overlayBg'){ editorOpen = false; renderOverlay(); renderMain(); }
+    });
+    document.getElementById('closeEditor').addEventListener('click', ()=>{
+      editorOpen = false; renderOverlay(); renderMain();
+    });
+
+    function resetTestProgress(){
+      queue = []; correctCount = 0; mistakeCount = 0;
+    }
+
+    document.getElementById('cardList').querySelectorAll('.q-text').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        const card = deck.cards.find(c=>c.id===Number(inp.dataset.id));
+        if(card){ card.question = inp.value.trim(); resetTestProgress(); }
+      });
+    });
+    document.getElementById('cardList').querySelectorAll('.opt-text').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        const card = deck.cards.find(c=>c.id===Number(inp.dataset.id));
+        if(card){ card.options[Number(inp.dataset.idx)] = inp.value.trim(); resetTestProgress(); }
+      });
+    });
+    document.getElementById('cardList').querySelectorAll('input[type=radio]').forEach(radio=>{
+      radio.addEventListener('change', ()=>{
+        const card = deck.cards.find(c=>c.id===Number(radio.dataset.id));
+        if(card){ card.correctIndex = Number(radio.dataset.idx); resetTestProgress(); renderOverlay(); }
+      });
+    });
+    document.getElementById('cardList').querySelectorAll('.del-q').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = Number(btn.dataset.id);
+        deck.cards = deck.cards.filter(c=>c.id!==id);
+        resetTestProgress();
+        renderDeckList();
+        renderOverlay();
+      });
+    });
+  }
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
